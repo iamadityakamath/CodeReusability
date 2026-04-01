@@ -25,6 +25,30 @@ const sampleTasks = [
 let sampleTaskIndex = 0;
 let loadingOverlayEl = null;
 
+function removeQuickActions() {
+  const existing = messagesEl.querySelectorAll(".quick-action-wrap");
+  existing.forEach((el) => el.remove());
+}
+
+function addQuickYesAction() {
+  removeQuickActions();
+  const wrap = document.createElement("div");
+  wrap.className = "quick-action-wrap";
+  wrap.innerHTML = '<button class="quick-yes-btn" type="button">Yes</button>';
+
+  const btn = wrap.querySelector("button");
+  btn.addEventListener("click", () => {
+    if (sendBtn.disabled) {
+      return;
+    }
+    promptEl.value = "yes";
+    streamGenerate();
+  });
+
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
 async function fetchWithFallback(path, init) {
   let lastError = null;
   for (const base of API_BASES) {
@@ -89,6 +113,12 @@ function addMessage(type, text, html = false, role = "assistant") {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+function shouldShowQuickYes(message) {
+  const normalized = (message || "").toLowerCase();
+  return normalized.includes("does this structure look good")
+    || (normalized.includes("look good") && normalized.includes("before i generate"));
+}
+
 function showLoadingOverlay(message = "Generating response...") {
   hideLoadingOverlay();
   const el = document.createElement("div");
@@ -122,6 +152,7 @@ async function streamGenerate() {
   }
 
   sendBtn.disabled = true;
+  removeQuickActions();
   showLoadingOverlay("Waiting for API response...");
   if (message) {
     addMessage("status", message, false, "user");
@@ -172,7 +203,11 @@ async function streamGenerate() {
             );
             setPhase("done");
           } else if (event.type === "assistant") {
-            addMessage("reasoning", renderAssistantContent(event.message || payload), true, "assistant");
+            const assistantMessage = event.message || payload;
+            addMessage("reasoning", renderAssistantContent(assistantMessage), true, "assistant");
+            if (shouldShowQuickYes(assistantMessage)) {
+              addQuickYesAction();
+            }
           } else {
             addMessage(event.type || "status", event.message || payload, false, "assistant");
           }
@@ -226,6 +261,7 @@ function clearChat() {
   messagesEl.innerHTML = "";
   promptEl.value = "";
   setPhase("gather");
+  removeQuickActions();
   addMessage("status", "Chat cleared. Start by sending any message.", false, "assistant");
 }
 
