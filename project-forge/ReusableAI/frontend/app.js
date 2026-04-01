@@ -1,13 +1,54 @@
 const API_BASE = "http://127.0.0.1:8008";
+const sessionId = `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 const messagesEl = document.getElementById("messages");
 const sendBtn = document.getElementById("sendBtn");
 const promptEl = document.getElementById("prompt");
 const projectNameEl = document.getElementById("projectName");
+const phaseBadgeEl = document.getElementById("phaseBadge");
 
-function addMessage(type, text, html = false) {
+function setPhase(phase) {
+  const normalized = (phase || "gather").toLowerCase();
+  const labels = {
+    gather: "Gather",
+    preview: "Preview",
+    generate: "Generate",
+    done: "Done",
+  };
+  const safe = labels[normalized] ? normalized : "gather";
+  phaseBadgeEl.className = `phase-badge phase-${safe}`;
+  phaseBadgeEl.textContent = labels[safe];
+}
+
+function escapeHtml(text) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function renderAssistantContent(text) {
+  const marker = "Key decisions:";
+  const markerIndex = text.indexOf(marker);
+  const hasTree = markerIndex > 0 && text.includes("/") && text.includes("└──");
+
+  if (!hasTree) {
+    return `<div>${escapeHtml(text).replaceAll("\n", "<br/>")}</div>`;
+  }
+
+  const treePart = text.slice(0, markerIndex).trimEnd();
+  const rest = text.slice(markerIndex).trimStart();
+  return `
+    <div>${escapeHtml(rest).replaceAll("\n", "<br/>")}</div>
+    <pre class="assistant-pre">${escapeHtml(treePart)}</pre>
+  `;
+}
+
+function addMessage(type, text, html = false, role = "assistant") {
   const el = document.createElement("div");
-  el.className = `msg ${type}`;
+  el.className = `msg ${type} ${role}`;
   if (html) {
     el.innerHTML = text;
   } else {
@@ -21,19 +62,22 @@ async function streamGenerate() {
   const message = promptEl.value.trim();
   const project_name = projectNameEl.value.trim();
 
-  if (!message || !project_name) {
-    addMessage("error", "Project name and prompt are required.");
+  if (!project_name) {
+    addMessage("error", "Project name is required.");
     return;
   }
 
   sendBtn.disabled = true;
-  addMessage("status", `Starting generation for ${project_name}...`);
+  if (message) {
+    addMessage("status", message, false, "user");
+  }
+  promptEl.value = "";
 
   try {
     const res = await fetch(`${API_BASE}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, project_name }),
+      body: JSON.stringify({ message, project_name, session_id: sessionId }),
     });
 
     if (!res.ok || !res.body) {
@@ -60,26 +104,41 @@ async function streamGenerate() {
 
         try {
           const event = JSON.parse(payload);
-          if (event.type === "success") {
+          if (event.type === "phase") {
+            setPhase(event.phase);
+          } else if (event.type === "success") {
             const url = `${API_BASE}${event.download_url}`;
             addMessage(
               "success",
               `${event.message}<br/><a href=\"${url}\" target=\"_blank\">Download zip</a>`,
-              true
+              true,
+              "assistant"
             );
+            setPhase("done");
+          } else if (event.type === "assistant") {
+            addMessage("reasoning", renderAssistantContent(event.message || payload), true, "assistant");
           } else {
-            addMessage(event.type || "status", event.message || payload);
+            addMessage(event.type || "status", event.message || payload, false, "assistant");
           }
         } catch {
-          addMessage("status", payload);
+          addMessage("status", payload, false, "assistant");
         }
       }
     }
   } catch (err) {
-    addMessage("error", `Network error: ${err.message}`);
+    addMessage("error", `Network error: ${err.message}`, false, "assistant");
   } finally {
     sendBtn.disabled = false;
   }
 }
 
 sendBtn.addEventListener("click", streamGenerate);
+promptEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    streamGenerate();
+  }
+});
+
+addMessage("status", "Start by sending any message. I will ask two requirement questions first.", false, "assistant");
+setPhase("gather");

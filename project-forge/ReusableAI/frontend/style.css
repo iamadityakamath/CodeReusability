@@ -1,31 +1,98 @@
 body {
   margin: 0;
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top left, #14324a, #08111a 40%, #05090f 100%);
+  background:
+    radial-gradient(circle at 0% 0%, #183550 0%, transparent 32%),
+    radial-gradient(circle at 100% 0%, #294045 0%, transparent 26%),
+    #0a1016;
   color: #e8f2ff;
 }
 
-.app {
-  max-width: 960px;
+.app-shell {
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.phase-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0f1822;
+  border: 1px solid #2f4458;
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+.phase-label {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.phase-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 86px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid #36556e;
+}
+
+.phase-gather {
+  background: #173146;
+  color: #bfe7ff;
+}
+
+.phase-preview {
+  background: #3e3414;
+  color: #ffeeb8;
+}
+
+.phase-generate {
+  background: #133b2f;
+  color: #b8ffe4;
+}
+
+.phase-done {
+  background: #2d1a4a;
+  color: #e0cbff;
+}
+
+.workspace {
+  border: 1px solid #27394b;
+  background: rgba(11, 18, 26, 0.72);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 14px;
 }
 
 h1 {
-  margin: 0 0 8px;
-  font-size: 2rem;
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+  letter-spacing: 0.2px;
 }
 
-.controls {
-  display: grid;
-  gap: 12px;
-  margin-top: 20px;
+p {
+  margin: 0;
+  color: #aac6de;
 }
 
-label {
+.project-row {
   display: grid;
   gap: 6px;
-  font-weight: 600;
+  max-width: 320px;
+  margin-bottom: 12px;
 }
 
 input,
@@ -34,8 +101,15 @@ textarea {
   border: 1px solid #2f4d66;
   border-radius: 10px;
   padding: 10px 12px;
-  background: #0b1722;
+  background: #0a1621;
   color: #e8f2ff;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #57b7ff;
+  box-shadow: 0 0 0 2px rgba(87, 183, 255, 0.2);
 }
 
 button {
@@ -46,29 +120,53 @@ button {
   color: #032020;
   background: linear-gradient(120deg, #53f4df, #6bd6ff);
   cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
 }
 
 .messages {
-  margin-top: 18px;
+  margin-top: 8px;
   border: 1px solid #2f4d66;
-  border-radius: 12px;
-  padding: 12px;
-  min-height: 280px;
-  background: rgba(8, 18, 27, 0.75);
+  border-radius: 14px;
+  padding: 14px;
+  min-height: 420px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(8, 18, 27, 0.9), rgba(6, 13, 20, 0.92));
 }
 
 .msg {
-  padding: 8px 10px;
-  margin: 8px 0;
-  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  border-radius: 12px;
+  max-width: 86%;
+  line-height: 1.45;
+}
+
+.msg.user {
+  margin-left: auto;
+  background: linear-gradient(120deg, #245a82, #193f63);
+  border: 1px solid #3f7ba7;
+}
+
+.msg.assistant {
+  margin-right: auto;
+  background: #152433;
+  border: 1px solid #314a63;
 }
 
 .status {
-  background: #13324a;
+  background: #132f44;
+  border: 1px solid #345676;
 }
 
 .reasoning {
-  background: #234012;
+  background: #1f2f45;
+  border: 1px solid #425f84;
 }
 
 .error {
@@ -77,6 +175,32 @@ button {
 
 .success {
   background: #0e3c2f;
+  border: 1px solid #2f7a62;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.composer textarea {
+  resize: vertical;
+  min-height: 74px;
+}
+
+.assistant-pre {
+  margin-top: 8px;
+  padding: 10px;
+  background: #0b1824;
+  border: 1px solid #2e4962;
+  border-radius: 10px;
+  overflow-x: auto;
+  color: #d6ecff;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  white-space: pre;
 }
 
 a {
