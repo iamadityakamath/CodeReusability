@@ -1,0 +1,12 @@
+{
+  "fastapi": "templates/backends/fastapi",
+  "flask": "templates/backends/flask",
+  "django": "templates/backends/django",
+  "langchain-rag": "templates/ml_llm/langchain-rag",
+  "multi-agent": "templates/ml_llm/multi-agent",
+  "fine-tuning": "templates/ml_llm/fine-tuning",
+  "streamlit": "templates/dashboards/streamlit",
+  "tableau-embed": "templates/dashboards/tableau-embed",
+  "fastapi-react": "templates/fullstack/fastapi-react",
+  "flask-nextjs": "templates/fullstack/flask-nextjs"
+}

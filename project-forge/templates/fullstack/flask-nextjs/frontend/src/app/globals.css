@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tai"]@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tail@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tai"]@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@tae}@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tai"]@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tailw@tailw@tailw@tailw@tailw@taint@tail@tailw@tailw@tontend: Next.js + Tailwind
+
+## Run
+
+1. cp .env.example .env
+2. docker compose up --build
+3. Frontend at http://localhost:3000 and backend health at http://localhost:8004/api/health

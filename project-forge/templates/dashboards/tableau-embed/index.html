@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{project_name}} Tableau Embed</title>
+    <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+    <script defer src="embed.js"></script>
+  </head>
+  <body>
+    <h1>{{project_name}}</h1>
+    <p>Built by {{author}} at {{created_at}}</p>
+    <tableau-viz id="tableauViz" src="https://public.tableau.com/views/RegionalSampleWorkbook/Stocks" width="100%" height="720"></tableau-viz>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🔨 Forge: New Project",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "forge.py",
+        "${input:forgeTemplate}",
+        "${input:forgeProjectName}"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "forgeTemplate",
+      "type": "pickString",
+      "description": "Choose a template",
+      "options": [
+        "fastapi",
+        "flask",
+        "django",
+        "langchain-rag",
+        "multi-agent",
+        "fine-tuning",
+        "streamlit",
+        "tableau-embed",
+        "fastapi-react",
+        "flask-nextjs"
+      ]
+    },
+    {
+      "id": "forgeProjectName",
+      "type": "promptString",
+      "description": "Project name"
+    }
+  ]
+}

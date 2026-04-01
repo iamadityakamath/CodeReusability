@@ -1,0 +1,12 @@
+{
+  "name": "{{project_name}}-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     ec    "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --h <    "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0.0     "dev": "vite --host 0.0.0t defineConfig({
+  plugins: [react()],
+  server: {
+    host: "0.0.0.0",
+    port: 5173
+  }
+});
