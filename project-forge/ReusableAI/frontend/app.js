@@ -9,20 +9,17 @@ const sendBtn = document.getElementById("sendBtn");
 const promptEl = document.getElementById("prompt");
 const projectNameEl = document.getElementById("projectName");
 const phaseBadgeEl = document.getElementById("phaseBadge");
-const downloadBtnEl = document.getElementById("downloadBtn");
+const sampleTaskBtnEl = document.getElementById("sampleTaskBtn");
+const clearChatBtnEl = document.getElementById("clearChatBtn");
 const deleteProjectsBtnEl = document.getElementById("deleteProjectsBtn");
 
-function setDownloadLink(url = "", enabled = false) {
-  if (!enabled || !url) {
-    downloadBtnEl.href = "#";
-    downloadBtnEl.classList.add("disabled");
-    downloadBtnEl.setAttribute("aria-disabled", "true");
-    return;
-  }
-  downloadBtnEl.href = url;
-  downloadBtnEl.classList.remove("disabled");
-  downloadBtnEl.setAttribute("aria-disabled", "false");
-}
+const sampleTasks = [
+  "Create a FastAPI backend with connection to Google BigQuery and structured logging.",
+  "Build a Flask API with PostgreSQL, JWT auth, Docker, and health/readiness endpoints.",
+  "Generate a FastAPI + React starter with Redis caching, background jobs, and CI config.",
+  "Create a LangChain RAG service with ingestion pipeline, vector store setup, and API routes.",
+];
+let sampleTaskIndex = 0;
 
 function setPhase(phase) {
   const normalized = (phase || "gather").toLowerCase();
@@ -84,8 +81,6 @@ async function streamGenerate() {
     return;
   }
 
-  setDownloadLink();
-
   sendBtn.disabled = true;
   if (message) {
     addMessage("status", message, false, "user");
@@ -127,7 +122,6 @@ async function streamGenerate() {
             setPhase(event.phase);
           } else if (event.type === "success") {
             const url = `${API_BASE}${event.download_url}`;
-            setDownloadLink(url, true);
             addMessage(
               "success",
               `${event.message}<br/><a href=\"${url}\" target=\"_blank\">Download zip</a>`,
@@ -174,7 +168,6 @@ async function deleteProjectFiles() {
       return;
     }
 
-    setDownloadLink();
     const deletedCount = Number(payload?.deleted || 0);
     addMessage("success", `Deleted ${deletedCount} item(s) from projects folder.`, false, "assistant");
   } catch (err) {
@@ -184,7 +177,22 @@ async function deleteProjectFiles() {
   }
 }
 
+function clearChat() {
+  messagesEl.innerHTML = "";
+  promptEl.value = "";
+  setPhase("gather");
+  addMessage("status", "Chat cleared. Start by sending any message.", false, "assistant");
+}
+
+function insertSampleTask() {
+  promptEl.value = sampleTasks[sampleTaskIndex];
+  sampleTaskIndex = (sampleTaskIndex + 1) % sampleTasks.length;
+  promptEl.focus();
+}
+
 sendBtn.addEventListener("click", streamGenerate);
+sampleTaskBtnEl.addEventListener("click", insertSampleTask);
+clearChatBtnEl.addEventListener("click", clearChat);
 deleteProjectsBtnEl.addEventListener("click", deleteProjectFiles);
 promptEl.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -195,4 +203,3 @@ promptEl.addEventListener("keydown", (e) => {
 
 addMessage("status", "Start by sending any message. I will ask two requirement questions first.", false, "assistant");
 setPhase("gather");
-setDownloadLink();

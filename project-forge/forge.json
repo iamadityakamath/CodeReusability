@@ -8,5 +8,7 @@
   "streamlit": "templates/dashboards/streamlit",
   "tableau-embed": "templates/dashboards/tableau-embed",
   "fastapi-react": "templates/fullstack/fastapi-react",
-  "flask-nextjs": "templates/fullstack/flask-nextjs"
+  "flask-nextjs": "templates/fullstack/flask-nextjs",
+  "mongodb": "templates/databases/mongodb",
+  "postgres": "templates/databases/postgres"
 }

@@ -166,11 +166,12 @@ def chat(req: ChatRequest) -> StreamingResponse:
     def generate() -> Generator[str, None, None]:
         root = ROOT
         load_env_files(root)
+        print(f"[debug] GEMINI_API_KEY exists: {bool(os.getenv('GEMINI_API_KEY'))}")
 
         project_name = req.project_name.strip()
         message = req.message.strip()
         session_id = (req.session_id or project_name).strip()
-
+        
         if not project_name:
             yield _sse({"type": "error", "message": "project_name is required"})
             return

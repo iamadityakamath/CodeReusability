@@ -39,7 +39,9 @@
         "streamlit",
         "tableau-embed",
         "fastapi-react",
-        "flask-nextjs"
+        "flask-nextjs",
+        "mongodb",
+        "postgres"
       ]
     },
     {
