@@ -216,11 +216,6 @@ def chat(req: ChatRequest) -> StreamingResponse:
             if phase == "preview":
                 yield _sse({"type": "phase", "phase": "preview"})
                 if _is_approval(message):
-                    zip_target = root / "projects" / f"{project_name}.zip"
-                    if zip_target.exists():
-                        yield _sse({"type": "error", "message": f"zip already exists: {zip_target.name}"})
-                        return
-
                     plan = session.get("plan") or {}
                     selections = plan.get("selections", [])
                     if not isinstance(selections, list):
@@ -239,9 +234,9 @@ def chat(req: ChatRequest) -> StreamingResponse:
                         yield _sse(
                             {
                                 "type": "success",
-                                "message": f"{project_name}.zip created",
+                                "message": f"{final_zip.name} created",
                                 "zip_path": str(final_zip.resolve()),
-                                "download_url": f"/api/download/{project_name}",
+                                "download_url": f"/api/download/{final_zip.name}",
                             }
                         )
                     finally:
@@ -282,12 +277,16 @@ def chat(req: ChatRequest) -> StreamingResponse:
     return StreamingResponse(generate(), media_type="text/event-stream")
 
 
-@app.get("/api/download/{project_name}")
-def download(project_name: str):
-    zip_path = ROOT / "projects" / f"{project_name}.zip"
+@app.get("/api/download/{zip_name}")
+def download(zip_name: str):
+    safe_name = Path(zip_name).name
+    if not safe_name.endswith(".zip"):
+        safe_name = f"{safe_name}.zip"
+
+    zip_path = ROOT / "projects" / safe_name
     if not zip_path.exists():
         return JSONResponse(status_code=404, content={"error": "Zip not found"})
-    return FileResponse(path=str(zip_path), filename=f"{project_name}.zip", media_type="application/zip")
+    return FileResponse(path=str(zip_path), filename=safe_name, media_type="application/zip")
 
 
 @app.delete("/api/projects")

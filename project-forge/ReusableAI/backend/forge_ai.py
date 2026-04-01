@@ -379,6 +379,11 @@ def zip_project(root: Path, staging_dir: Path, project_name: str) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     zip_path = output_dir / f"{project_name}.zip"
+    suffix = 2
+    while zip_path.exists():
+                zip_path = output_dir / f"{project_name}-{suffix}.zip"
+                suffix += 1
+
     with ZipFile(zip_path, mode="w", compression=ZIP_DEFLATED) as zf:
         for item in staging_dir.rglob("*"):
             if not item.is_file():
@@ -412,11 +417,6 @@ def main() -> int:
         eprint("Error: GEMINI_API_KEY is not set.")
         return 1
 
-    zip_path = root / "projects" / f"{project_name}.zip"
-    if zip_path.exists():
-        eprint(f"Error: output zip already exists: {zip_path}")
-        return 1
-
     staging_dir: Path | None = None
     try:
         registry = load_registry(root)
@@ -432,7 +432,7 @@ def main() -> int:
         final_zip = zip_project(root, staging_dir, project_name)
 
         print(f"Reasoning: {plan.get('reasoning', 'No reasoning provided')}")
-        print(f"Success: {project_name}.zip created")
+        print(f"Success: {final_zip.name} created")
         print(f"Output: {final_zip.resolve()}")
         return 0
     except Exception as exc:  # noqa: BLE001
