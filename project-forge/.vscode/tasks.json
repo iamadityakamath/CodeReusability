@@ -16,6 +16,12 @@
         "panel": "shared"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "🤖 Forge AI: New Project",
+      "type": "shell",
+      "command": "python forge_ai.py \"${input:projectDescription}\" ${input:aiProjectName}",
+      "problemMatcher": []
     }
   ],
   "inputs": [
@@ -40,6 +46,17 @@
       "id": "forgeProjectName",
       "type": "promptString",
       "description": "Project name"
+    },
+    {
+      "id": "projectDescription",
+      "type": "promptString",
+      "description": "Describe your project (plain English)",
+      "default": "A FastAPI backend with PostgreSQL and Docker"
+    },
+    {
+      "id": "aiProjectName",
+      "type": "promptString",
+      "description": "Project name (kebab-case)"
     }
   ]
 }

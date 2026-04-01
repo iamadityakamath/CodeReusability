@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ReusableAI</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <h1>ReusableAI</h1>
+        <p>Describe your project and stream generation logs in real time.</p>
+      </header>
+
+      <section class="controls">
+        <label>
+          Project name
+          <input id="projectName" type="text" placeholder="my-api" value="my-api" />
+        </label>
+        <label>
+          Prompt
+          <textarea id="prompt" rows="4" placeholder="A FastAPI backend with PostgreSQL and GCP logging"></textarea>
+        </label>
+        <button id="sendBtn">Generate Zip</button>
+      </section>
+
+      <section class="chat">
+        <div id="messages" class="messages"></div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

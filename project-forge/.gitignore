@@ -1,0 +1,49 @@
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+
+# Environment/secrets
+.env
+.env.*
+.env.example
+**/.env.example
+*.pem
+*.key
+*.crt
+
+# Build/distribution artifacts
+build/
+dist/
+*.egg-info/
+
+# Generated project outputs from forge
+projects/
+!projects/.gitkeep
+
+# Archives
+*.zip
+
+# Frontend/package artifacts
+node_modules/
+.npm/
+
+# IDE/editor
+.vscode/*
+!.vscode/tasks.json
+.idea/
