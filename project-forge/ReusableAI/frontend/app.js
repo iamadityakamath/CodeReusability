@@ -1,5 +1,7 @@
 const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-const API_BASE = isLocalHost ? "http://127.0.0.1:8008" : "";
+const API_BASE = isLocalHost
+  ? "http://127.0.0.1:8008"
+  : "https://code-reusability-backend.vercel.app";
 const sessionId = `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 const messagesEl = document.getElementById("messages");
