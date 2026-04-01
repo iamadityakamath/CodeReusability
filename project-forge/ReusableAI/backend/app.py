@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from forge_ai import (  # noqa: E402
+from ReusableAI.backend.forge_ai import (  # noqa: E402
     assemble,
     build_manifest,
     call_gemini,
