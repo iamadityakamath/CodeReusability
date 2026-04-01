@@ -95,6 +95,13 @@ p {
   margin-bottom: 12px;
 }
 
+.actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
 input,
 textarea {
   width: 100%;
@@ -126,6 +133,44 @@ button {
 button:hover {
   transform: translateY(-1px);
   filter: brightness(1.04);
+}
+
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  color: #06242a;
+  background: linear-gradient(120deg, #9ff7a7, #77f0c3);
+  border: 1px solid #4ec889;
+  transition: transform 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.download-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+.download-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.danger-btn {
+  border: 1px solid #ab5151;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  color: #ffdada;
+  background: linear-gradient(120deg, #5a1f1f, #7a2929);
+}
+
+.danger-btn:hover {
+  filter: brightness(1.08);
 }
 
 .messages {

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Any, Generator
@@ -286,3 +287,26 @@ def download(project_name: str):
     if not zip_path.exists():
         return JSONResponse(status_code=404, content={"error": "Zip not found"})
     return FileResponse(path=str(zip_path), filename=f"{project_name}.zip", media_type="application/zip")
+
+
+@app.delete("/api/projects")
+def delete_all_projects():
+    projects_dir = ROOT / "projects"
+    if not projects_dir.exists():
+        return {"deleted": 0, "message": "Projects folder does not exist."}
+
+    deleted = 0
+    for entry in projects_dir.iterdir():
+        try:
+            if entry.is_dir():
+                shutil.rmtree(entry)
+            else:
+                entry.unlink()
+            deleted += 1
+        except OSError as exc:
+            return JSONResponse(
+                status_code=500,
+                content={"error": f"Failed to delete {entry.name}: {exc}"},
+            )
+
+    return {"deleted": deleted, "message": "Project artifacts removed."}

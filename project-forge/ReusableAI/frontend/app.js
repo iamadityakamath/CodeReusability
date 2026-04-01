@@ -6,6 +6,20 @@ const sendBtn = document.getElementById("sendBtn");
 const promptEl = document.getElementById("prompt");
 const projectNameEl = document.getElementById("projectName");
 const phaseBadgeEl = document.getElementById("phaseBadge");
+const downloadBtnEl = document.getElementById("downloadBtn");
+const deleteProjectsBtnEl = document.getElementById("deleteProjectsBtn");
+
+function setDownloadLink(url = "", enabled = false) {
+  if (!enabled || !url) {
+    downloadBtnEl.href = "#";
+    downloadBtnEl.classList.add("disabled");
+    downloadBtnEl.setAttribute("aria-disabled", "true");
+    return;
+  }
+  downloadBtnEl.href = url;
+  downloadBtnEl.classList.remove("disabled");
+  downloadBtnEl.setAttribute("aria-disabled", "false");
+}
 
 function setPhase(phase) {
   const normalized = (phase || "gather").toLowerCase();
@@ -67,6 +81,8 @@ async function streamGenerate() {
     return;
   }
 
+  setDownloadLink();
+
   sendBtn.disabled = true;
   if (message) {
     addMessage("status", message, false, "user");
@@ -108,6 +124,7 @@ async function streamGenerate() {
             setPhase(event.phase);
           } else if (event.type === "success") {
             const url = `${API_BASE}${event.download_url}`;
+            setDownloadLink(url, true);
             addMessage(
               "success",
               `${event.message}<br/><a href=\"${url}\" target=\"_blank\">Download zip</a>`,
@@ -132,7 +149,40 @@ async function streamGenerate() {
   }
 }
 
+async function deleteProjectFiles() {
+  const approved = window.confirm("Delete all files in the projects folder?");
+  if (!approved) {
+    return;
+  }
+
+  deleteProjectsBtnEl.disabled = true;
+  try {
+    const res = await fetch(`${API_BASE}/api/projects`, { method: "DELETE" });
+    let payload = null;
+    try {
+      payload = await res.json();
+    } catch {
+      payload = null;
+    }
+
+    if (!res.ok) {
+      const errorMessage = payload?.error || `Delete failed: ${res.status}`;
+      addMessage("error", errorMessage, false, "assistant");
+      return;
+    }
+
+    setDownloadLink();
+    const deletedCount = Number(payload?.deleted || 0);
+    addMessage("success", `Deleted ${deletedCount} item(s) from projects folder.`, false, "assistant");
+  } catch (err) {
+    addMessage("error", `Network error: ${err.message}`, false, "assistant");
+  } finally {
+    deleteProjectsBtnEl.disabled = false;
+  }
+}
+
 sendBtn.addEventListener("click", streamGenerate);
+deleteProjectsBtnEl.addEventListener("click", deleteProjectFiles);
 promptEl.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
@@ -142,3 +192,4 @@ promptEl.addEventListener("keydown", (e) => {
 
 addMessage("status", "Start by sending any message. I will ask two requirement questions first.", false, "assistant");
 setPhase("gather");
+setDownloadLink();
