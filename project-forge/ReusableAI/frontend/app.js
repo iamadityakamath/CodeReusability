@@ -1,7 +1,10 @@
 const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-const API_BASE = isLocalHost
-  ? "http://127.0.0.1:8008"
-  : "https://code-reusability-backend.vercel.app";
+const API_BASES = isLocalHost
+  ? ["http://127.0.0.1:8008"]
+  : [
+      "https://retrorsely-uncondensational-bentlee.ngrok-free.dev",
+      "https://code-reusability-backend.vercel.app",
+    ];
 const sessionId = `session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 const messagesEl = document.getElementById("messages");
@@ -20,6 +23,20 @@ const sampleTasks = [
   "Create a LangChain RAG service with ingestion pipeline, vector store setup, and API routes.",
 ];
 let sampleTaskIndex = 0;
+let loadingOverlayEl = null;
+
+async function fetchWithFallback(path, init) {
+  let lastError = null;
+  for (const base of API_BASES) {
+    try {
+      const response = await fetch(`${base}${path}`, init);
+      return { response, base };
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error("No backend endpoint is reachable.");
+}
 
 function setPhase(phase) {
   const normalized = (phase || "gather").toLowerCase();
@@ -72,6 +89,29 @@ function addMessage(type, text, html = false, role = "assistant") {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+function showLoadingOverlay(message = "Generating response...") {
+  hideLoadingOverlay();
+  const el = document.createElement("div");
+  el.className = "loading-overlay";
+  el.innerHTML = `
+    <div class="loading-card" role="status" aria-live="polite">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <span class="loading-text">${escapeHtml(message)}</span>
+    </div>
+  `;
+  messagesEl.appendChild(el);
+  loadingOverlayEl = el;
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function hideLoadingOverlay() {
+  if (!loadingOverlayEl) {
+    return;
+  }
+  loadingOverlayEl.remove();
+  loadingOverlayEl = null;
+}
+
 async function streamGenerate() {
   const message = promptEl.value.trim();
   const project_name = projectNameEl.value.trim();
@@ -82,13 +122,14 @@ async function streamGenerate() {
   }
 
   sendBtn.disabled = true;
+  showLoadingOverlay("Waiting for API response...");
   if (message) {
     addMessage("status", message, false, "user");
   }
   promptEl.value = "";
 
   try {
-    const res = await fetch(`${API_BASE}/api/chat`, {
+    const { response: res, base: apiBase } = await fetchWithFallback("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message, project_name, session_id: sessionId }),
@@ -118,10 +159,11 @@ async function streamGenerate() {
 
         try {
           const event = JSON.parse(payload);
+          hideLoadingOverlay();
           if (event.type === "phase") {
             setPhase(event.phase);
           } else if (event.type === "success") {
-            const url = `${API_BASE}${event.download_url}`;
+            const url = `${apiBase}${event.download_url}`;
             addMessage(
               "success",
               `${event.message}<br/><a href=\"${url}\" target=\"_blank\">Download zip</a>`,
@@ -135,13 +177,16 @@ async function streamGenerate() {
             addMessage(event.type || "status", event.message || payload, false, "assistant");
           }
         } catch {
+          hideLoadingOverlay();
           addMessage("status", payload, false, "assistant");
         }
       }
     }
   } catch (err) {
+    hideLoadingOverlay();
     addMessage("error", `Network error: ${err.message}`, false, "assistant");
   } finally {
+    hideLoadingOverlay();
     sendBtn.disabled = false;
   }
 }
@@ -154,7 +199,7 @@ async function deleteProjectFiles() {
 
   deleteProjectsBtnEl.disabled = true;
   try {
-    const res = await fetch(`${API_BASE}/api/projects`, { method: "DELETE" });
+    const { response: res } = await fetchWithFallback("/api/projects", { method: "DELETE" });
     let payload = null;
     try {
       payload = await res.json();
